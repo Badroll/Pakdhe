@@ -1,13 +1,14 @@
 from flask import Flask, request, jsonify, send_file, Blueprint
 from flask_cors import CORS, cross_origin
 import pymysql
-import datetime
+from datetime import datetime, timedelta
 import os
 import json
 import helper, env
 
 app = Flask(__name__, template_folder="view", static_folder="lib")
 app.config["JSON_SORT_KEYS"] = False
+app.json.sort_keys = False
 app.secret_key = env.app_secret_key
 app.config['CORS_HEADERS'] = 'Content-Type'
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
@@ -34,7 +35,7 @@ def middleware():
     if requested_route in ruled_auth_token:
         token = request.headers.get('auth-token')
         saved_token = helper.db_raw(f"""
-                SELECT * FROM _token WHERE TOKEN_VALUE = {token}
+                SELECT * FROM _token WHERE TOKEN_VALUE = '{token}'
             """)[1]
         if len(saved_token == 0):
             return helper.composeReply("ERROR", "Auth Token invalid")
@@ -43,7 +44,7 @@ def middleware():
             return helper.composeReply("ERROR", "Auth Token expired")
         global user_data
         user_data = helper.db_raw(f"""
-            SELECT * FROM _user WHERE USER_TOKEN = {token}
+            SELECT * FROM _user WHERE USER_TOKEN = '{token}'
             """)[1]
         if len(user_data) == 0:
             return helper.composeReply("ERROR", "User invalid")
@@ -68,7 +69,7 @@ def middleware():
     if requested_route in ruled_public_route:
         api_key = request.args.get("key")
         if not api_key == None and api_key == env.api_key_public_route:
-            print("please")
+            print("silahkan")
         else:
             return helper.composeReply("ERROR", "API key invalid")
             
@@ -109,7 +110,7 @@ def caleg_detail():
     is_testing = True if is_testing == "Y" else False
     if is_testing:
         user_data = helper.db_raw(f"""SELECT * FROM _user as A
-            WHERE A.USER_PHONE = {'6282131789196'}
+            WHERE A.USER_PHONE = '{'6282131789196'}'
         """)[1]
         user_data = user_data[0]
 
@@ -159,11 +160,13 @@ def auth_login():
         return helper.composeReply("ERROR", "Parameter incomplete (password)")
     
     cek_user = helper.db_raw(f"""
-            SELECT * FROM _user WHERE USER_PHONE = {phone}
+            SELECT * FROM _user WHERE USER_PHONE = '{phone}'
         """)[1]
+    print("cek_user", cek_user)
     if len(cek_user) == 0:
         return helper.composeReply("ERROR", f"Maaf, user dengan phone {phone} tidak terdaftar")
-    if not helper.check_hash(password + phone, cek_user["USER_PASSWORD"]):
+    cek_user = cek_user[0]
+    if not helper.check_hash(password + phone, cek_user["USER_PASSWORD_HASH"]):
         return helper.composeReply("ERROR", f"Password salah, silahkan ulangi")
     
     token = helper.generate_token()
@@ -171,19 +174,28 @@ def auth_login():
                         {
                             "USER_TOKEN" : token
                         },
-                        f"USER_ID = {cek_user['USER_ID']}"
+                        f"USER_ID = '{cek_user['USER_ID']}'"
                     )
     insert_token = helper.db_insert("_token",
                         {
                             "TOKEN_VALUE" : token,
                             "TOKEN_CREATED" : datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                            "TOKEN_EXPIRED" : datetime.now().timedelta(days=1)
-                        }                
+                            "TOKEN_EXPIRED" : datetime.now() + timedelta(days=1)
+                        }
                     )
     cek_user["USER_TOKEN"] = token
     
     return helper.composeReply("SUCCESS", "Login berhasil", cek_user)
 
+
+route = "/db_raw"
+#ruled_access_token.append(route)
+ruled_public_route.append(route)
+@app.route(route, methods=['POST'])
+def db_raw():
+    params = request.get_json()
+    raw = helper.db_raw(f"{params['QUERY']}")
+    return helper.composeReply("SUCCESS", "raw query result", raw)
 
 
 route = "/file"
@@ -228,15 +240,16 @@ def hooks():
         helper.send_telegram(log, chat_id=env.tele_chat_id_bdmsth_logger_wablas_hooks)
         
         account = helper.db_raw(f"""
-            SELECT * FROM _user WHERE USER_WABOT_WA = {params['sender']}
+            SELECT * FROM _user WHERE USER_WABOT_WA = '{params['sender']}'
             """)[1]
         if len(account) == 0:
             return helper.composeReply("SUCCESS", "Webhooks processed, thanks!")
+        account = account[0]
         table = account["USER_CALEG_PEMILIH_TABLE"]
         
         if True: #pemilih == "pemilih"
             pemilih = helper.db_raw(f"""
-                            SELECT * FROM {table} WHERE PEMILIH_WA = {params["phone"]}
+                            SELECT * FROM {table} WHERE PEMILIH_WA = '{params["phone"]}'
                             """)[1]
             from_pemilih = True if len(pemilih) > 0 else False
 
@@ -247,22 +260,23 @@ def hooks():
                 update_pemilih = helper.db_update(f"{table}",
                                 {
                                     "PEMILIH_JAWABAN" : "Y",
-                                    "PEMILIH_HOOKS_ID" : hooks_id,
+                                    "PEMILIH_HOOKS_ID" : hooks_id[1],
                                 },
-                                f"PEMILIH_WA = {params['phone']}"
+                                f"PEMILIH_WA = '{params['phone']}'"
                             )
-                if not update_pemilih[0]:
-                    # URGENT LOG
-                    log = ""
-                    log += "\nFAILED UPDATE ANSWER FROM PEMILIH"
-                    log += f"\n\nhooks => {params}"
-                    log += f"\npemilih => {pemilih[0]}"
-                    log += f"\n\n{update_pemilih[1]}"
-                    helper.send_telegram(log, chat_id=env.tele_chat_id_me)
+                # if not update_pemilih[0]:
+                #     # URGENT LOG
+                #     log = ""
+                #     log += "\nFAILED UPDATE ANSWER FROM PEMILIH"
+                #     log += f"\n\nhooks => {params}"
+                #     log += f"\npemilih => {pemilih[0]}"
+                #     log += f"\n\n{update_pemilih[1]}"
+                #     helper.send_telegram(log, chat_id=env.tele_chat_id_me)
 
         return helper.composeReply("SUCCESS", "Webhooks processed, thanks!")
 
     except Exception as e:
+        print(e)
         # URGENT LOG
         log = ""
         log += "\nWEBHOOK GOT ERROR"

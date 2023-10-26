@@ -59,7 +59,7 @@ def broadcast():
                     "RECEIVER_DATE" : ymdhis,
                     "RECEIVER_RESPONSE" : r[1],
                 },
-                f"RECEIVER_ID = {user['RECEIVER_ID']}"
+                f"RECEIVER_ID = '{user['RECEIVER_ID']}'"
             )
             log = ""
             log += "WHATSAPP BROADCAST"

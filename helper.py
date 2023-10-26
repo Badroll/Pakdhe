@@ -44,6 +44,7 @@ def db_raw(qry):
     c = db.cursor()
     try:
         qry = f"{qry}"
+        print(qry)
         c.execute(qry)
         json_data = []
         if qry.lstrip().lower().startswith("select"):
@@ -192,7 +193,7 @@ def send_telegram_photo(file, chat_id = env.tele_chat_id_bdmsth_logger_pakdhe):
 def get_setting(id):
     import pymysql
 
-    setting = db_raw(f"SELECT * FROM _setting WHERE S_ID = {id}")
+    setting = db_raw(f"SELECT * FROM _setting WHERE S_ID = '{id}'")
     if setting[0] == False or len(setting[1]) == 0:
         return "-"
     else:
@@ -303,7 +304,7 @@ def check_hash(r_text, hashed_text):
 
 def get_reference_info(id):
     r = db_raw(f"""
-        SELECT * FROM _reference WHERE R_ID = {id}
+        SELECT * FROM _reference WHERE R_ID = '{id}'
     """)
     if r[0] and len(r[1]) > 0:
         return r[1][0]
