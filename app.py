@@ -103,27 +103,47 @@ route = "/caleg_detail"
 def caleg_detail():
     global user_data
 
+    is_testing = request.form.get("is_testing")
+    if is_testing == None:
+        return helper.composeReply("ERROR", "Parameter incomplete (is_testing)")
+    is_testing = True if is_testing == "Y" else False
+    if is_testing:
+        user_data = helper.db_raw(f"""SELECT * FROM _user as A
+            WHERE A.USER_PHONE = {'6282131789196'}
+        """)[1]
+        user_data = user_data[0]
+
     pemilih = []
     total_sent = 0
     total_confirm = 0
     table = user_data["USER_CALEG_PEMILIH_TABLE"]
-    if table == "pemilih":
+    if True: #table == "pemilih"
         pemilih = helper.db_raw(f"""
-            SELECT A.* FROM {table} as A LEFT JOIN hooks as B ON A.PEMILIH_HOOKS_ID = B.HOOKS_ID
+            SELECT * FROM {table} as A
+            LEFT JOIN hooks as B ON A.PEMILIH_HOOKS_ID = B.HOOKS_ID
             LEFT JOIN receiver as C ON A.PEMILIH_WA = C.RECEIVER_WA
+            WHERE A.PEMILIH_NIP IS NULL
         """)[1]
         data = user_data
-        for i, row in pemilih:
+        for i, row in enumerate(pemilih):
             if not row["RECEIVER_ID"] == None and row["RECEIVER_DATE"] == None:
                 total_sent += 1
             if row["PEMILIH_JAWABAN"] == "Y" and not row["PEMILIH_HOOKS_ID"] == None:
                 total_confirm += 1
 
-    data["PEMILIH"] = pemilih
+        if is_testing:
+            pemilih_testing = []
+            for i, row in enumerate(pemilih):
+                rulesY = ["ya", "y"]
+                if not row["PEMILIH_JAWABAN"] == None and row["PEMILIH_JAWABAN"].strip().lower() in rulesY:
+                    pemilih_testing.append(row)
+
+
+    data["PEMILIH"] = pemilih if not is_testing else pemilih_testing
     data["TOTAL_TERKIRIM"] = total_sent
     data["TOTAL_KONFIRMASI"] = total_confirm
 
-    return helper.composeReply("SUCCESS", "Data Caleg", data)
+    return helper.composeReply("SUCCESS", "Detail Caleg", data)
 
 
 route = "/auth_login"
@@ -131,19 +151,19 @@ route = "/auth_login"
 #ruled_auth_token.append(route)
 @app.route(route, methods=['POST'])
 def auth_login():
-    email = request.form["email"]
-    if email == None:
-        return helper.composeReply("ERROR", "Parameter incomplete (email)")
-    password = request.form["password"]
+    phone = request.form.get("phone")
+    if phone == None:
+        return helper.composeReply("ERROR", "Parameter incomplete (phone)")
+    password = request.form.get("password")
     if password == None:
         return helper.composeReply("ERROR", "Parameter incomplete (password)")
     
     cek_user = helper.db_raw(f"""
-            SELECT * FROM _user WHERE email = {email}
+            SELECT * FROM _user WHERE USER_PHONE = {phone}
         """)[1]
     if len(cek_user) == 0:
-        return helper.composeReply("ERROR", f"Maaf, user dengan email {email} tidak terdaftar")
-    if not helper.check_hash(password + cek_user["USER_ID"] + env.sha256_addon_key, cek_user["USER_PASSWORD"]):
+        return helper.composeReply("ERROR", f"Maaf, user dengan phone {phone} tidak terdaftar")
+    if not helper.check_hash(password + phone, cek_user["USER_PASSWORD"]):
         return helper.composeReply("ERROR", f"Password salah, silahkan ulangi")
     
     token = helper.generate_token()
@@ -197,6 +217,15 @@ def hooks():
                             "HOOKS_RESPONSE_phone" : params["phone"],
                             "HOOKS_RESPONSE_message" : params["message"],
                         })
+        
+        log = ""
+        log += "HOOKS RECEIVED"
+        log += "\n"
+        log += "\nwablas :"
+        log += f"\n{env.wabot}"
+        log += "\n\nparams :"
+        log += f"\n{params}"
+        helper.send_telegram(log, chat_id=env.tele_chat_id_bdmsth_logger_wablas_hooks)
         
         account = helper.db_raw(f"""
             SELECT * FROM _user WHERE USER_WABOT_WA = {params['sender']}

@@ -58,6 +58,7 @@ def db_raw(qry):
     except Exception as e:
         rStatus = False
         rMessage = str(e)
+        print("db_raw", str(e))
         c.close()
 
     return [rStatus, rMessage]
@@ -86,6 +87,7 @@ def db_insert(table, data):
     except Exception as e:
         rStatus = False
         rMessage = str(e)
+        print("db_insert", str(e))
         c.close()
 
     return [rStatus, rMessage]
@@ -111,6 +113,7 @@ def db_update(table, data, where_clause):
     except Exception as e:
         rStatus = False
         rMessage = str(e)
+        print("db_update", str(e))
         c.close()
 
     return [rStatus, rMessage]
@@ -133,6 +136,7 @@ def db_delete(table, where_clause):
     except Exception as e:
         rStatus = False
         rMessage = str(e)
+        print("db_delete", str(e))
         c.close()
 
     return [rStatus, rMessage]
@@ -269,6 +273,8 @@ def create_hash(r_text):
     import hashlib
 
     text = r_text + env.sha256_addon_key
+
+    print("create_hash", text)
     
     # Pilih algoritma hash yang aman, seperti SHA-256
     sha256 = hashlib.sha256()
@@ -286,7 +292,8 @@ def create_hash(r_text):
 
 # Fungsi untuk memeriksa apakah teks cocok dengan hash
 def check_hash(r_text, hashed_text):
-    text = r_text + env.sha256_addon_key
+    text = r_text
+    print("check_hash", text)
     # Membuat hash baru dari teks yang sama
     new_hashed_text = create_hash(text)
 
