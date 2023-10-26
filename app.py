@@ -238,6 +238,17 @@ def hooks():
         log += "\n\nparams :"
         log += f"\n{params}"
         helper.send_telegram(log, chat_id=env.tele_chat_id_bdmsth_logger_wablas_hooks)
+
+        import requests
+        url = 'https://watesta.badrulam.com/api/hooks'
+        data = params
+        response = requests.post(url, json=data)
+        if response.status_code == 200:
+            print('hooks Berhasil!')
+            response_json = response.json()
+            print(response_json)
+        else:
+            print('hooks Gagal:', response.status_code)
         
         account = helper.db_raw(f"""
             SELECT * FROM _user WHERE USER_WABOT_WA = '{params['sender']}'
