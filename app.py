@@ -135,7 +135,7 @@ def caleg_detail():
         if is_testing:
             pemilih_testing = []
             for i, row in enumerate(pemilih):
-                rulesY = ["ya", "y"]
+                rulesY = ["iya", "ya", "y"]
                 if not row["PEMILIH_JAWABAN"] == None and row["PEMILIH_JAWABAN"].strip().lower() in rulesY:
                     pemilih_testing.append(row)
 
@@ -291,7 +291,6 @@ def hooks():
         # URGENT LOG
         log = ""
         log += "\nWEBHOOK GOT ERROR"
-        log += f"\n\nhooks => {params}"
         log += f"\n\n{e}"
         helper.send_telegram(log, chat_id=env.tele_chat_id_me)
         
