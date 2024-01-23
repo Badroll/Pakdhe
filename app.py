@@ -240,7 +240,7 @@ def hooks():
         helper.send_telegram(log, chat_id=env.tele_chat_id_bdmsth_logger_wablas_hooks)
 
         import requests
-        url = 'https://watesta.badrulam.com/api/hooks'
+        url = 'http://62.72.51.244:8003/api/hooks'
         data = params
         response = requests.post(url, json=data)
         if response.status_code == 200:
@@ -266,7 +266,88 @@ def hooks():
 
             message = params["message"]
             command = message.strip().lower()
-            rulesY = ["y", "ya", "yes"]
+            rulesY = ["y", "ya", "iya", "yes"]
+            if command in rulesY and not params["isGroup"] and from_pemilih:
+                update_pemilih = helper.db_update(f"{table}",
+                                {
+                                    "PEMILIH_JAWABAN" : "Y",
+                                    "PEMILIH_HOOKS_ID" : hooks_id[1],
+                                },
+                                f"PEMILIH_WA = '{params['phone']}'"
+                            )
+                # if not update_pemilih[0]:
+                #     # URGENT LOG
+                #     log = ""
+                #     log += "\nFAILED UPDATE ANSWER FROM PEMILIH"
+                #     log += f"\n\nhooks => {params}"
+                #     log += f"\npemilih => {pemilih[0]}"
+                #     log += f"\n\n{update_pemilih[1]}"
+                #     helper.send_telegram(log, chat_id=env.tele_chat_id_me)
+
+        return helper.composeReply("SUCCESS", "Webhooks processed, thanks!")
+
+    except Exception as e:
+        print(e)
+        # URGENT LOG
+        log = ""
+        log += "\nWEBHOOK GOT ERROR"
+        log += f"\n\n{e}"
+        helper.send_telegram(log, chat_id=env.tele_chat_id_me)
+        
+        return helper.composeReply("ERROR", "Internal error occurred, sorry!", statuscode=500)
+    
+
+route = "/hooks2"
+#ruled_wablas_server.append(route)
+@app.route(route, methods = ["GET", "POST"])
+def hooks2():
+    params = request.get_json()
+    try:
+        hooks_id = helper.db_insert("hooks", {
+                            "HOOKS_RESPONSE" : f"{params}",
+                            "HOOKS_RESPONSE_id" : params["id"],
+                            "HOOKS_RESPONSE_sender" : params["sender"],
+                            "HOOKS_RESPONSE_phone" : params["phone"],
+                            "HOOKS_RESPONSE_message" : params["message"],
+                        })
+        
+        log = ""
+        log += "HOOKS RECEIVED"
+        log += "\n"
+        log += "\nwablas :"
+        log += f"\n{env.wabot}"
+        log += "\n\nparams :"
+        log += f"\n{params}"
+        helper.send_telegram(log, chat_id=env.tele_chat_id_bdmsth_logger_wablas_hooks)
+
+        # import requests
+        # url = 'http://62.72.51.244:8003/api/hooks'
+        # data = params
+        # response = requests.post(url, json=data)
+        # if response.status_code == 200:
+        #     print('hooks Berhasil!')
+        #     response_json = response.json()
+        #     print(response_json)
+        # else:
+        #     print('hooks Gagal:', response.status_code)
+        
+        account = helper.db_raw(f"""
+            SELECT * FROM _user WHERE USER_WABOT_WA = '{params['sender']}'
+            """)[1]
+        if len(account) == 0:
+            return helper.composeReply("SUCCESS", "Webhooks processed, thanks!")
+        account = account[0]
+        table = account["USER_CALEG_PEMILIH_TABLE"]
+        
+        if True: #pemilih == "pemilih"
+            pemilih = helper.db_raw(f"""
+                            SELECT * FROM {table} WHERE PEMILIH_WA = '{params["phone"]}'
+                            """)[1]
+            from_pemilih = True if len(pemilih) > 0 else False
+
+            message = params["message"]
+            command = message.strip().lower()
+            rulesY = ["y", "ya", "iya", "yes"]
             if command in rulesY and not params["isGroup"] and from_pemilih:
                 update_pemilih = helper.db_update(f"{table}",
                                 {

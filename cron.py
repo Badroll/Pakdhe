@@ -9,19 +9,21 @@ from datetime import datetime
 mydb = pymysql.connect(host=env.dbHost, user=env.dbUser, passwd=env.dbPassword, database=env.dbDatabase)
 cursor = mydb.cursor()
 
-cursor.execute("SELECT * FROM receiver WHERE RECEIVER_SENDER = '6285173205090' AND RECEIVER_DATE IS NOT NULL ") #JANGAN LUPA, switch NULL
+cursor.execute("SELECT * FROM receiver WHERE RECEIVER_SENDER = '62882008074530' AND RECEIVER_DATE IS NOT NULL ") #JANGAN LUPA, switch NULL
 receiver = helper.sqlresGet(cursor)
 cursor.close()
 
-print(receiver)
+#print(receiver)
 
 run_cron = True
 last_processed = None
+reported = 0
 
 def broadcast():
     global run_cron
     try:
         global last_processed
+        global reported
         #time.sleep(30) # sesuai settingan delay dari wablas
 
         sleep_time = random.randint(1, 10)
@@ -61,17 +63,20 @@ def broadcast():
                 },
                 f"RECEIVER_ID = '{user['RECEIVER_ID']}'"
             )
-            log = ""
-            log += "WHATSAPP BROADCAST"
-            log += "\n"
-            log += "\nHost => "
-            log += "\nReceiver => " + user["RECEIVER_NAMA"]
-            log += "\nReceiver WA => " + user["RECEIVER_WA"]
-            log += "\nMessage : "
-            log += "\n" + msg
-            log += "\nResponse :"
-            log += "\n" + r[1]
-            helper.send_telegram(log)
+            reported += 1
+            if reported == 10:
+                reported = 0
+                log = ""
+                log += "WHATSAPP BROADCAST"
+                log += "\n"
+                log += "\nHost => "
+                log += "\nReceiver => " + user["RECEIVER_NAMA"]
+                log += "\nReceiver WA => " + user["RECEIVER_WA"]
+                log += "\nMessage : "
+                log += "\n" + msg
+                log += "\nResponse :"
+                log += "\n" + r[1]
+                helper.send_telegram(log)
         else:
             # URGENT LOG
             log = ""

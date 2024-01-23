@@ -200,12 +200,12 @@ def get_setting(id):
         return setting[1]["S_VALUE"]
 
 
-def send_wa_multipleSendText(phone, message, account=1):
+def send_wa_multipleSendText(phone, message, account=0):
     import requests
     url = "https://kudus.wablas.com/api/v2/send-message"
     headers = {
         "Content-Type": "application/json",
-        "Authorization": env.wabot[f"wabot_{account}_token"],
+        "Authorization": env.wabot[account]["wabot_token"],
     }
     data = {
         "data": [
@@ -230,7 +230,7 @@ def send_wa_multipleSendImage(phone, caption, url, account=1):
     url = "https://kudus.wablas.com/api/v2/send-image"
     headers = {
         "Content-Type": "application/json",
-        "Authorization": env.wabot[f"wabot_{account}_token"],
+        "Authorization": env.wabot[account]["wabot_token"],
     }
     data = {
         "data": [
