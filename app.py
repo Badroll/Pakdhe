@@ -149,7 +149,6 @@ def caleg_detail():
 
 route = "/auth_login"
 #ruled_access_token.append(route)
-#ruled_auth_token.append(route)
 @app.route(route, methods=['POST'])
 def auth_login():
     phone = request.form.get("phone")

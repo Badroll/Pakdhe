@@ -225,7 +225,7 @@ def send_wa_multipleSendText(phone, message, account=0):
     return [success, str(response.text)]
 
 
-def send_wa_multipleSendImage(phone, caption, url, account=1):
+def send_wa_multipleSendImage(phone, caption, img_url, account=1):
     import requests
     url = "https://kudus.wablas.com/api/v2/send-image"
     headers = {
@@ -236,11 +236,12 @@ def send_wa_multipleSendImage(phone, caption, url, account=1):
         "data": [
             {
                 "phone": phone,
-                "image": url,
+                "image": img_url,
                 "caption": caption
             }
         ]
     }
+    print(data)
     response = requests.post(url, headers=headers, data=json.dumps(data))
     success = False
     if response.status_code == 200:

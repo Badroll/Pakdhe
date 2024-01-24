@@ -9,7 +9,7 @@ from datetime import datetime
 mydb = pymysql.connect(host=env.dbHost, user=env.dbUser, passwd=env.dbPassword, database=env.dbDatabase)
 cursor = mydb.cursor()
 
-cursor.execute("SELECT * FROM receiver WHERE RECEIVER_SENDER = '62882008074530' AND RECEIVER_DATE IS NOT NULL ") #JANGAN LUPA, switch NULL
+cursor.execute("SELECT * FROM receiver WHERE RECEIVER_SENDER = '6281998913865' AND RECEIVER_DATE IS NOT NULL ") #JANGAN LUPA, switch NULL
 receiver = helper.sqlresGet(cursor)
 cursor.close()
 
@@ -29,7 +29,7 @@ def broadcast():
         sleep_time = random.randint(1, 10)
         time.sleep(sleep_time)
 
-        print("======")
+        print("==============")
         print("last_processed", last_processed)
         if last_processed == None:
             index = 0
@@ -51,7 +51,9 @@ def broadcast():
         msg += "\n\nmessage created at " + ymdhis
         msg += f"\nsleep_time : {sleep_time}"
 
-        r = helper.send_wa_multipleSendText(user["RECEIVER_WA"], msg)
+        img_url = "http://62.72.51.244:8004/assets/uploads/products/Screenshot_1701804161.png"
+        #r = helper.send_wa_multipleSendText(user["RECEIVER_WA"], msg)
+        r = helper.send_wa_multipleSendImage(user["RECEIVER_WA"], msg, img_url)
         print(r)
         if r[0]:
             #update_receiver(user["RECEIVER_ID"], msg, ymdhis, r[1])
@@ -64,7 +66,7 @@ def broadcast():
                 f"RECEIVER_ID = '{user['RECEIVER_ID']}'"
             )
             reported += 1
-            if reported == 10:
+            if reported == 1:
                 reported = 0
                 log = ""
                 log += "WHATSAPP BROADCAST"
