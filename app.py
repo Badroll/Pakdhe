@@ -85,9 +85,9 @@ def token():
 
 
 route = "/caleg"
-#ruled_access_token.append(route)
-#ruled_auth_token.append(route)
-#ruled_role_admin.append(route)
+ruled_access_token.append(route)
+ruled_auth_token.append(route)
+ruled_role_admin.append(route)
 @app.route(route, methods=['POST'])
 def caleg():
     global user_data
@@ -98,8 +98,8 @@ def caleg():
 
 
 route = "/caleg_detail"
-#ruled_access_token.append(route)
-#ruled_auth_token.append(route)
+ruled_access_token.append(route)
+ruled_auth_token.append(route)
 @app.route(route, methods=['POST'])
 def caleg_detail():
     global user_data
@@ -148,7 +148,7 @@ def caleg_detail():
 
 
 route = "/auth_login"
-#ruled_access_token.append(route)
+ruled_access_token.append(route)
 @app.route(route, methods=['POST'])
 def auth_login():
     phone = request.form.get("phone")
@@ -318,17 +318,6 @@ def hooks2():
         log += "\n\nparams :"
         log += f"\n{params}"
         helper.send_telegram(log, chat_id=env.tele_chat_id_bdmsth_logger_wablas_hooks)
-
-        # import requests
-        # url = 'http://62.72.51.244:8003/api/hooks'
-        # data = params
-        # response = requests.post(url, json=data)
-        # if response.status_code == 200:
-        #     print('hooks Berhasil!')
-        #     response_json = response.json()
-        #     print(response_json)
-        # else:
-        #     print('hooks Gagal:', response.status_code)
         
         account = helper.db_raw(f"""
             SELECT * FROM _user WHERE USER_WABOT_WA = '{params['sender']}'
@@ -355,14 +344,6 @@ def hooks2():
                                 },
                                 f"PEMILIH_WA = '{params['phone']}'"
                             )
-                # if not update_pemilih[0]:
-                #     # URGENT LOG
-                #     log = ""
-                #     log += "\nFAILED UPDATE ANSWER FROM PEMILIH"
-                #     log += f"\n\nhooks => {params}"
-                #     log += f"\npemilih => {pemilih[0]}"
-                #     log += f"\n\n{update_pemilih[1]}"
-                #     helper.send_telegram(log, chat_id=env.tele_chat_id_me)
 
         return helper.composeReply("SUCCESS", "Webhooks processed, thanks!")
 
