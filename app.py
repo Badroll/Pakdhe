@@ -27,6 +27,7 @@ def middleware():
     requested_route = request.path
     if requested_route in ruled_access_token:
         token = request.headers.get('access-token')
+        print("access-token", token)
         if token in one_time_tokens:
             del one_time_tokens[token]
         else:
