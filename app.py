@@ -132,6 +132,10 @@ def caleg_detail():
                 total_sent += 1
             if row["PEMILIH_JAWABAN"] == "Y" and not row["PEMILIH_HOOKS_ID"] == None:
                 total_confirm += 1
+            # reduce data
+            row["HOOKS_RESPONSE"] == None
+            row["RECEIVER_MESSAGE"] == None
+            row["RECEIVER_RESPONSE"] == None
 
         if is_testing:
             pemilih_testing = []
@@ -139,6 +143,9 @@ def caleg_detail():
                 rulesY = ["iya", "ya", "y"]
                 if not row["PEMILIH_JAWABAN"] == None and row["PEMILIH_JAWABAN"].strip().lower() in rulesY:
                     pemilih_testing.append(row)
+                    pemilih_testing[i]["HOOKS_RESPONSE"] == None
+                    pemilih_testing[i]["RECEIVER_MESSAGE"] == None
+                    pemilih_testing[i]["RECEIVER_RESPONSE"] == None
 
 
     data["PEMILIH"] = pemilih if not is_testing else pemilih_testing
