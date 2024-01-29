@@ -128,8 +128,8 @@ def caleg_detail():
         """)[1]
         data = user_data
         for i, row in enumerate(pemilih):
-            sent = not row["RECEIVER_ID"] == None and not row["RECEIVER_DATE"] == None
-            confirmed = row["PEMILIH_JAWABAN"] == "Y" and not row["PEMILIH_HOOKS_ID"] == None
+            sent = (not row["RECEIVER_ID"] == None) and (not row["RECEIVER_DATE"] == None)
+            confirmed = (row["PEMILIH_JAWABAN"] == "Y") and (not row["PEMILIH_HOOKS_ID"] == None)
             if sent:
                 total_sent += 1
             if confirmed:
