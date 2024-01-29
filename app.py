@@ -128,7 +128,7 @@ def caleg_detail():
         """)[1]
         data = user_data
         for i, row in enumerate(pemilih):
-            sent = not row["RECEIVER_ID"] == None and row["RECEIVER_DATE"] == None
+            sent = not row["RECEIVER_ID"] == None and not row["RECEIVER_DATE"] == None
             confirmed = row["PEMILIH_JAWABAN"] == "Y" and not row["PEMILIH_HOOKS_ID"] == None
             if sent:
                 total_sent += 1
@@ -137,9 +137,9 @@ def caleg_detail():
             row["STATUS_SENT"] = sent
             row["STATUS_CONFIRMED"] = confirmed
             # reduce data
-            row["HOOKS_RESPONSE"] == None
-            row["RECEIVER_MESSAGE"] == None
-            row["RECEIVER_RESPONSE"] == None
+            row["HOOKS_RESPONSE"] = None
+            row["RECEIVER_MESSAGE"] = None
+            row["RECEIVER_RESPONSE"] = None
 
         if is_testing:
             pemilih_testing = []
@@ -147,9 +147,9 @@ def caleg_detail():
                 rulesY = ["iya", "ya", "y"]
                 if not row["PEMILIH_JAWABAN"] == None and row["PEMILIH_JAWABAN"].strip().lower() in rulesY:
                     pemilih_testing.append(row)
-                    pemilih_testing[i]["HOOKS_RESPONSE"] == None
-                    pemilih_testing[i]["RECEIVER_MESSAGE"] == None
-                    pemilih_testing[i]["RECEIVER_RESPONSE"] == None
+                    pemilih_testing[i]["HOOKS_RESPONSE"] = None
+                    pemilih_testing[i]["RECEIVER_MESSAGE"] = None
+                    pemilih_testing[i]["RECEIVER_RESPONSE"] = None
 
     data["PEMILIH"] = pemilih if not is_testing else pemilih_testing
     data["TOTAL_TERKIRIM"] = total_sent
