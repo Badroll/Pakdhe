@@ -38,7 +38,7 @@ def middleware():
         saved_token = helper.db_raw(f"""
                 SELECT * FROM _token WHERE TOKEN_VALUE = '{token}'
             """)[1]
-        if len(saved_token == 0):
+        if len(saved_token) == 0:
             return helper.composeReply("ERROR", "Auth Token invalid")
         saved_token = saved_token[0]
         if datetime.now() > saved_token["TOKEN_EXPIRED"]:
@@ -86,7 +86,7 @@ def token():
 
 
 route = "/caleg"
-ruled_access_token.append(route)
+#ruled_access_token.append(route)
 ruled_auth_token.append(route)
 ruled_role_admin.append(route)
 @app.route(route, methods=['POST'])
@@ -99,7 +99,7 @@ def caleg():
 
 
 route = "/caleg_detail"
-ruled_access_token.append(route)
+#ruled_access_token.append(route)
 ruled_auth_token.append(route)
 @app.route(route, methods=['POST'])
 def caleg_detail():
@@ -149,7 +149,7 @@ def caleg_detail():
 
 
 route = "/auth_login"
-ruled_access_token.append(route)
+#ruled_access_token.append(route)
 @app.route(route, methods=['POST'])
 def auth_login():
     phone = request.form.get("phone")
@@ -318,7 +318,7 @@ def hooks2():
         log += f"\n{env.wabot}"
         log += "\n\nparams :"
         log += f"\n{params}"
-        helper.send_telegram(log, chat_id=env.tele_chat_id_bdmsth_logger_wablas_hooks)
+        #helper.send_telegram(log, chat_id=env.tele_chat_id_bdmsth_logger_wablas_hooks)
         
         account = helper.db_raw(f"""
             SELECT * FROM _user WHERE USER_WABOT_WA = '{params['sender']}'
@@ -336,7 +336,7 @@ def hooks2():
 
             message = params["message"]
             command = message.strip().lower()
-            rulesY = ["y", "ya", "iya", "yes"]
+            rulesY = ["y", "ya", "iya"]
             if command in rulesY and not params["isGroup"] and from_pemilih:
                 update_pemilih = helper.db_update(f"{table}",
                                 {
