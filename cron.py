@@ -9,11 +9,14 @@ from datetime import datetime
 mydb = pymysql.connect(host=env.dbHost, user=env.dbUser, passwd=env.dbPassword, database=env.dbDatabase)
 cursor = mydb.cursor()
 
-cursor.execute("SELECT * FROM receiver WHERE RECEIVER_SENDER = '6281998913865' AND RECEIVER_DATE IS NOT NULL ") #JANGAN LUPA, switch NULL
+#6282131789196
+#6281998913865
+cursor.execute("""
+               SELECT * FROM receiver WHERE RECEIVER_SENDER = '6282131789196' AND RECEIVER_DATE IS NULL
+               AND RECEIVER_WA IN ('6281215992673', '6281348457600', '6282242023609')
+               """) #JANGAN LUPA, switch NULL/NOT
 receiver = helper.sqlresGet(cursor)
 cursor.close()
-
-#print(receiver)
 
 run_cron = True
 last_processed = None
@@ -24,7 +27,6 @@ def broadcast():
     try:
         global last_processed
         global reported
-        #time.sleep(30) # sesuai settingan delay dari wablas
 
         sleep_time = random.randint(1, 10)
         time.sleep(sleep_time)
@@ -39,6 +41,7 @@ def broadcast():
 
         if index >= len(receiver):
             last_processed = None
+            #run_cron = False
             return
 
         ymdhis = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -52,11 +55,9 @@ def broadcast():
         msg += f"\nsleep_time : {sleep_time}"
 
         img_url = "http://62.72.51.244:8004/assets/uploads/products/Screenshot_1701804161.png"
-        #r = helper.send_wa_multipleSendText(user["RECEIVER_WA"], msg)
-        r = helper.send_wa_multipleSendImage(user["RECEIVER_WA"], msg, img_url)
+        r = helper.send_wa_multipleSendImage(user["RECEIVER_WA"], msg, img_url, account=2)
         print(r)
         if r[0]:
-            #update_receiver(user["RECEIVER_ID"], msg, ymdhis, r[1])
             helper.db_update("receiver",
                 {
                     "RECEIVER_MESSAGE" : msg,

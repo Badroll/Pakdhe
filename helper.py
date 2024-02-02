@@ -310,3 +310,31 @@ def get_reference_info(id):
     if r[0] and len(r[1]) > 0:
         return r[1][0]
     return "-"
+
+
+def validate_format_wa(wa):
+    nan = ["nan", "tidak punya hp", ""]
+    new_wa = wa.strip()
+    if new_wa in nan:
+        return "-"
+    if new_wa.startswith("+"):
+        new_wa = "" + new_wa[1:]
+    if new_wa.startswith("0"):
+        new_wa = "62" + new_wa[1:]
+    if new_wa.startswith("8"):
+        new_wa = "628" + new_wa[1:]
+    incorrect = True
+    while incorrect:
+        char_check = "-"
+        if char_check in new_wa:
+            new_wa = new_wa.replace(char_check, "")
+        else:
+            incorrect = False
+    incorrect = True
+    while incorrect:
+        char_check = " "
+        if char_check in new_wa:
+            new_wa = new_wa.replace(char_check, "")
+        else:
+            incorrect = False
+    return new_wa
