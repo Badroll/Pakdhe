@@ -245,7 +245,7 @@ def hooks():
         log += "HOOKS RECEIVED"
         log += "\n"
         log += "\nwablas :"
-        log += f"\n{env.wabot}"
+        log += f"\n{env.wabot[0]}"
         log += "\n\nparams :"
         log += f"\n{params}"
         helper.send_telegram(log, chat_id=env.tele_chat_id_bdmsth_logger_wablas_hooks)
@@ -326,7 +326,7 @@ def hooks2():
         log += "HOOKS RECEIVED"
         log += "\n"
         log += "\nwablas :"
-        log += f"\n{env.wabot}"
+        log += f"\n{env.wabot[1]}"
         log += "\n\nparams :"
         log += f"\n{params}"
         helper.send_telegram(log, chat_id=env.tele_chat_id_bdmsth_logger_wablas_hooks)
@@ -388,7 +388,7 @@ def hooks3():
         log += "HOOKS RECEIVED"
         log += "\n"
         log += "\nwablas :"
-        log += f"\n{env.wabot}"
+        log += f"\n{env.wabot[2]}"
         log += "\n\nparams :"
         log += f"\n{params}"
         helper.send_telegram(log, chat_id=env.tele_chat_id_bdmsth_logger_wablas_hooks)

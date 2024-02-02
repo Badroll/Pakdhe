@@ -12,7 +12,7 @@ cursor = mydb.cursor()
 #6282131789196
 #6281998913865
 cursor.execute("""
-               SELECT * FROM receiver WHERE RECEIVER_SENDER = '6282131789196' AND RECEIVER_DATE IS NULL
+               SELECT * FROM receiver WHERE RECEIVER_SENDER = '6281998913865' AND RECEIVER_DATE IS NULL
                AND RECEIVER_WA IN ('6281215992673', '6281348457600', '6282242023609')
                """) #JANGAN LUPA, #switch sender dan clause IN
 receiver = helper.sqlresGet(cursor)
@@ -48,16 +48,10 @@ def broadcast():
 
         user = receiver[index]
         msg = ""
-        msg += "Mari Kita Bersama Menuju TPS"
-        msg += "\nDi Hari *RABU, 14 FEBRUARI 2024*"
-        msg += "\n\nUntuk Memilih Saya"
-        msg += "\n*R AKH MUNIF HARYONO, SKM,. MKes*"
-        msg += "\n\nDi Partai GOLKAR No. Urut *6* Dapil *14* Provinsi Jawa Timur, Madura (Bangkalan, Sampang, Pamekasan, Sumenep)"
-        msg += "\n\nUNTUK KEMAKMURAN DAN KESEJAHTERAAN RAKYAT KITA BERSAMA"
-        #msg += "PILIH DOKTER UNTUK MADURA LEBIH SEHAT" #switch msg
+        msg += "PILIH DOKTER UNTUK MADURA LEBIH SEHAT" #switch msg
         msg += "\n\n_pesan ini dikirimkan pada: " + ymdhis + "_"
 
-        img_url = "http://62.72.51.244:5003/file?key=c0SCV-hRKuH&filename=poster_pakdhe.jpg" #switch
+        img_url = "http://62.72.51.244:5003/file?key=c0SCV-hRKuH&filename=poster_dokter.jpg" #switch
         r = helper.send_wa_multipleSendImage(user["RECEIVER_WA"], msg, img_url, account=2) #switch
         print(r)
         if r[0]:
