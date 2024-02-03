@@ -349,10 +349,10 @@ def hooks2():
             message = params["message"]
             command = message.strip().lower()
             rulesY = ["y", "ya", "iya"]
-            if command in rulesY and not params["isGroup"] and from_pemilih:
+            if not params["isGroup"] and from_pemilih:
                 update_pemilih = helper.db_update(f"{table}",
                                 {
-                                    "PEMILIH_JAWABAN" : "Y",
+                                    #"PEMILIH_JAWABAN" : "Y",
                                     "PEMILIH_HOOKS_ID" : hooks_id[1],
                                 },
                                 f"PEMILIH_WA = '{params['phone']}'"
@@ -411,10 +411,10 @@ def hooks3():
             message = params["message"]
             command = message.strip().lower()
             rulesY = ["y", "ya", "iya"]
-            if command in rulesY and not params["isGroup"] and from_pemilih:
+            if not params["isGroup"] and from_pemilih:
                 update_pemilih = helper.db_update(f"{table}",
                                 {
-                                    "PEMILIH_JAWABAN" : "Y",
+                                    #"PEMILIH_JAWABAN" : "Y",
                                     "PEMILIH_HOOKS_ID" : hooks_id[1],
                                 },
                                 f"PEMILIH_WA = '{params['phone']}'"

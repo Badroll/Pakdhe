@@ -1,0 +1,11 @@
+nohup python cron.py > cron.log 2>&1 &
+echo $! > cron_pid.txt
+
+kill -9 $(cat cron_pid.txt)
+
+---------------------------------------
+
+nohup python cron2.py > cron2.log 2>&1 &
+echo $! > cron2_pid.txt
+
+kill -9 $(cat cron2_pid.txt)
