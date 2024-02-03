@@ -1,3 +1,5 @@
+prod = 0 == 1
+
 import schedule
 import time
 import pymysql
@@ -9,10 +11,10 @@ from datetime import datetime
 mydb = pymysql.connect(host=env.dbHost, user=env.dbUser, passwd=env.dbPassword, database=env.dbDatabase)
 cursor = mydb.cursor()
 
-cursor.execute("""
-               SELECT * FROM receiver WHERE RECEIVER_SENDER = '6282131789196' AND RECEIVER_DATE IS NULL
-               AND RECEIVER_WA IN ('6281215992673', '6281348457600', '6282242023609')
-               """) #switch clause IN
+qry = "SELECT * FROM receiver WHERE RECEIVER_SENDER = '6282131789196' AND RECEIVER_DATE IS NULL"
+if not prod:
+    qry += " AND RECEIVER_WA IN ('6281215992673', '6281348457600', '6282242023609')"
+cursor.execute(qry)
 receiver = helper.sqlresGet(cursor)
 cursor.close()
 
@@ -40,7 +42,8 @@ def broadcast():
 
         if index >= len(receiver):
             last_processed = None
-            #run_cron = False #switch
+            if prod:
+                run_cron = False #switch
             return
 
         ymdhis = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -73,7 +76,7 @@ def broadcast():
                 log = ""
                 log += "WHATSAPP BROADCAST"
                 log += "\n"
-                log += "\nReceiver ID => " + user["RECEIVER_ID"]
+                log += f"\nReceiver ID => {user['RECEIVER_ID']}" 
                 log += "\nReceiver => " + user["RECEIVER_NAMA"]
                 log += "\nReceiver WA => " + user["RECEIVER_WA"]
                 log += "\nMessage : "
@@ -106,7 +109,9 @@ try:
         schedule.run_pending()
         time.sleep(1)
     print("CRON STOPPED, run_cron is false")
+    helper.send_telegram("CRON STOPPED, run_cron is false", chat_id=env.tele_chat_id_me)
     schedule.clear()
 except KeyboardInterrupt:
     print("CRON STOPPED, forcely")
+    helper.send_telegram("CRON STOPPED, forcely", chat_id=env.tele_chat_id_me)
     schedule.clear()
