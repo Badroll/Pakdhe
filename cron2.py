@@ -31,7 +31,8 @@ def broadcast():
         sleep_time = random.randint(1, 10)
         time.sleep(sleep_time)
 
-        print("==============")
+        print("===============================================================")
+        print("---------------------------------------------------------------")
         print("last_processed", last_processed)
         if last_processed == None:
             index = 0
@@ -52,7 +53,7 @@ def broadcast():
         msg += "\n\n_pesan ini dikirimkan pada: " + ymdhis + "_"
 
         img_url = "http://62.72.51.244:5003/file?key=c0SCV-hRKuH&filename=poster_dokter.jpg" #switch
-        r = helper.send_wa_multipleSendImage(user["RECEIVER_WA"], msg, img_url, account=2) #switch
+        r = helper.send_wa_multipleSendImage(user["RECEIVER_WA"], msg, img_url, account=1) #switch
         print(r)
         if r[0]:
             helper.db_update("receiver",
@@ -67,7 +68,7 @@ def broadcast():
             if reported == 1:
                 reported = 0
                 log = ""
-                log += "WHATSAPP BROADCAST"
+                log += "WHATSAPP BROADCAST 2"
                 log += "\n"
                 log += "\nHost => "
                 log += "\nReceiver => " + user["RECEIVER_NAMA"]
@@ -80,7 +81,7 @@ def broadcast():
         else:
             # URGENT LOG
             log = ""
-            log += "\nWHATSAPP BROADCAST FAILED"
+            log += "\nWHATSAPP BROADCAST 2 FAILED"
             log + "\n\n" + r[1]
             helper.send_telegram(log, chat_id=env.tele_chat_id_me)
             run_cron = False
@@ -89,7 +90,7 @@ def broadcast():
         # URGENT LOG
         print("Terjadi kesalahan:", e)
         log = ""
-        log += "\nBROADCAST FUNCTION GOT SOME ERROR"
+        log += "\nBROADCAST 2 FUNCTION GOT SOME ERROR"
         log += f"\n\n{e}"
         helper.send_telegram(log, chat_id=env.tele_chat_id_me)
         run_cron = False

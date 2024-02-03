@@ -323,7 +323,7 @@ def hooks2():
                         })
         
         log = ""
-        log += "HOOKS RECEIVED"
+        log += "HOOKS 2 RECEIVED"
         log += "\n"
         log += "\nwablas :"
         log += f"\n{env.wabot[1]}"
@@ -363,7 +363,7 @@ def hooks2():
         print(e)
         # URGENT LOG
         log = ""
-        log += "\nWEBHOOK GOT ERROR"
+        log += "\nWEBHOOK 2 GOT ERROR"
         log += f"\n\n{e}"
         helper.send_telegram(log, chat_id=env.tele_chat_id_me)
         
@@ -385,7 +385,7 @@ def hooks3():
                         })
         
         log = ""
-        log += "HOOKS RECEIVED"
+        log += "HOOKS 3 RECEIVED"
         log += "\n"
         log += "\nwablas :"
         log += f"\n{env.wabot[2]}"
@@ -425,7 +425,7 @@ def hooks3():
         print(e)
         # URGENT LOG
         log = ""
-        log += "\nWEBHOOK GOT ERROR"
+        log += "\nWEBHOOK 3 GOT ERROR"
         log += f"\n\n{e}"
         helper.send_telegram(log, chat_id=env.tele_chat_id_me)
         

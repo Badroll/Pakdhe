@@ -31,7 +31,8 @@ def broadcast():
         sleep_time = random.randint(1, 10)
         time.sleep(sleep_time)
 
-        print("==============")
+        print("===============================================================")
+        print("---------------------------------------------------------------")
         print("last_processed", last_processed)
         if last_processed == None:
             index = 0
