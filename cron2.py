@@ -9,12 +9,10 @@ from datetime import datetime
 mydb = pymysql.connect(host=env.dbHost, user=env.dbUser, passwd=env.dbPassword, database=env.dbDatabase)
 cursor = mydb.cursor()
 
-#6282131789196
-#6281998913865
 cursor.execute("""
                SELECT * FROM receiver WHERE RECEIVER_SENDER = '6281998913865' AND RECEIVER_DATE IS NULL
                AND RECEIVER_WA IN ('6281215992673', '6281348457600', '6282242023609')
-               """) #JANGAN LUPA, #switch sender dan clause IN
+               """) #switch clause IN
 receiver = helper.sqlresGet(cursor)
 cursor.close()
 
@@ -49,11 +47,11 @@ def broadcast():
 
         user = receiver[index]
         msg = ""
-        msg += "PILIH DOKTER UNTUK MADURA LEBIH SEHAT" #switch msg
+        msg += "PILIH DOKTER UNTUK MADURA LEBIH SEHAT"
         msg += "\n\n_pesan ini dikirimkan pada: " + ymdhis + "_"
 
-        img_url = "http://62.72.51.244:5003/file?key=c0SCV-hRKuH&filename=poster_dokter.jpg" #switch
-        r = helper.send_wa_multipleSendImage(user["RECEIVER_WA"], msg, img_url, account=1) #switch
+        img_url = "http://62.72.51.244:5003/file?key=c0SCV-hRKuH&filename=poster_dokter.jpg"
+        r = helper.send_wa_multipleSendImage(user["RECEIVER_WA"], msg, img_url, account=1)
         print(r)
         if r[0]:
             helper.db_update("receiver",
@@ -70,7 +68,7 @@ def broadcast():
                 log = ""
                 log += "WHATSAPP BROADCAST 2"
                 log += "\n"
-                log += "\nHost => "
+                log += "\nReceiver ID => " + user["RECEIVER_ID"]
                 log += "\nReceiver => " + user["RECEIVER_NAMA"]
                 log += "\nReceiver WA => " + user["RECEIVER_WA"]
                 log += "\nMessage : "

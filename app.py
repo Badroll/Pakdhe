@@ -125,10 +125,11 @@ def caleg_detail():
             LEFT JOIN hooks as B ON A.PEMILIH_HOOKS_ID = B.HOOKS_ID
             LEFT JOIN receiver as C ON A.PEMILIH_WA = C.RECEIVER_WA
             WHERE A.PEMILIH_NIP IS NULL
-            WHERE C.RECEIVER_SENDER = {user_data['USER_WABOT_WA']}
+            AND C.RECEIVER_SENDER = {user_data['USER_WABOT_WA']}
         """)[1]
         data = user_data
         for i, row in enumerate(pemilih):
+            print(row)
             sent = (not row["RECEIVER_ID"] == None) and (not row["RECEIVER_DATE"] == None)
             confirmed = (row["PEMILIH_JAWABAN"] == "Y") and (not row["PEMILIH_HOOKS_ID"] == None)
             if sent:
