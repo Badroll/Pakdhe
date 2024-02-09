@@ -11,7 +11,7 @@ from datetime import datetime
 mydb = pymysql.connect(host=env.dbHost, user=env.dbUser, passwd=env.dbPassword, database=env.dbDatabase)
 cursor = mydb.cursor()
 
-qry = "SELECT * FROM receiver WHERE RECEIVER_SENDER = '6282131789196' AND RECEIVER_DATE IS NULL"
+qry = "SELECT * FROM receiver WHERE RECEIVER_SENDER = '6287849315118' AND RECEIVER_DATE IS NULL"
 if not prod:
     qry += " AND RECEIVER_WA IN ('6281215992673', '6281348457600', '6282242023609')"
 cursor.execute(qry)
