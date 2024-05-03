@@ -249,7 +249,7 @@ def hooks():
         log += f"\n{env.wabot[0]}"
         log += "\n\nparams :"
         log += f"\n{params}"
-        helper.send_telegram(log, chat_id=env.tele_chat_id_bdmsth_logger_wablas_hooks)
+        #helper.send_telegram(log, chat_id=env.tele_chat_id_bdmsth_logger_wablas_hooks)
 
         import requests
         url = 'http://62.72.51.244:8003/api/hooks'
@@ -261,42 +261,46 @@ def hooks():
             print(response_json)
         else:
             print('hooks Gagal:', response.status_code)
-        
-        account = helper.db_raw(f"""
-            SELECT * FROM _user WHERE USER_WABOT_WA = '{params['sender']}'
-            """)[1]
-        if len(account) == 0:
+
+        if 1 == 2:
             return helper.composeReply("SUCCESS", "Webhooks processed, thanks!")
-        account = account[0]
-        table = account["USER_CALEG_PEMILIH_TABLE"]
-        
-        if True: #pemilih == "pemilih"
-            pemilih = helper.db_raw(f"""
-                            SELECT * FROM {table} WHERE PEMILIH_WA = '{params["phone"]}'
-                            """)[1]
-            from_pemilih = True if len(pemilih) > 0 else False
+        else:
+            # case
+            account = helper.db_raw(f"""
+                SELECT * FROM _user WHERE USER_WABOT_WA = '{params['sender']}'
+                """)[1]
+            if len(account) == 0:
+                return helper.composeReply("SUCCESS", "Webhooks processed, thanks!")
+            account = account[0]
+            table = account["USER_CALEG_PEMILIH_TABLE"]
+            
+            if True: #pemilih == "pemilih"
+                pemilih = helper.db_raw(f"""
+                                SELECT * FROM {table} WHERE PEMILIH_WA = '{params["phone"]}'
+                                """)[1]
+                from_pemilih = True if len(pemilih) > 0 else False
 
-            message = params["message"]
-            command = message.strip().lower()
-            rulesY = ["y", "ya", "iya", "yes"]
-            if command in rulesY and not params["isGroup"] and from_pemilih:
-                update_pemilih = helper.db_update(f"{table}",
-                                {
-                                    "PEMILIH_JAWABAN" : "Y",
-                                    "PEMILIH_HOOKS_ID" : hooks_id[1],
-                                },
-                                f"PEMILIH_WA = '{params['phone']}'"
-                            )
-                # if not update_pemilih[0]:
-                #     # URGENT LOG
-                #     log = ""
-                #     log += "\nFAILED UPDATE ANSWER FROM PEMILIH"
-                #     log += f"\n\nhooks => {params}"
-                #     log += f"\npemilih => {pemilih[0]}"
-                #     log += f"\n\n{update_pemilih[1]}"
-                #     helper.send_telegram(log, chat_id=env.tele_chat_id_me)
+                message = params["message"]
+                command = message.strip().lower()
+                rulesY = ["y", "ya", "iya", "yes"]
+                if command in rulesY and not params["isGroup"] and from_pemilih:
+                    update_pemilih = helper.db_update(f"{table}",
+                                    {
+                                        "PEMILIH_JAWABAN" : "Y",
+                                        "PEMILIH_HOOKS_ID" : hooks_id[1],
+                                    },
+                                    f"PEMILIH_WA = '{params['phone']}'"
+                                )
+                    # if not update_pemilih[0]:
+                    #     # URGENT LOG
+                    #     log = ""
+                    #     log += "\nFAILED UPDATE ANSWER FROM PEMILIH"
+                    #     log += f"\n\nhooks => {params}"
+                    #     log += f"\npemilih => {pemilih[0]}"
+                    #     log += f"\n\n{update_pemilih[1]}"
+                    #     helper.send_telegram(log, chat_id=env.tele_chat_id_me)
 
-        return helper.composeReply("SUCCESS", "Webhooks processed, thanks!")
+            return helper.composeReply("SUCCESS", "Webhooks processed, thanks!")
 
     except Exception as e:
         print(e)
