@@ -262,7 +262,7 @@ def hooks():
         else:
             print('hooks Gagal:', response.status_code)
 
-        if 1 == 2:
+        if 1 == 1:
             return helper.composeReply("SUCCESS", "Webhooks processed, thanks!")
         else:
             # case
